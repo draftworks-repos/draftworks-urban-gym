@@ -48,6 +48,7 @@ export const HomePage: React.FC<HomePageProps> = ({
   onOpenLightbox,
 }) => {
   const heroContentRef = useRef<HTMLDivElement>(null);
+  const aboutStatsRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -64,6 +65,65 @@ export const HomePage: React.FC<HomePageProps> = ({
         ease: 'power3.out',
       }
     );
+  }, []);
+
+  useEffect(() => {
+    const stats = aboutStatsRef.current;
+    if (!stats) return;
+
+    const counters = Array.from(stats.querySelectorAll<HTMLElement>('[data-stat-value]'));
+    const tweens: gsap.core.Tween[] = [];
+    const animateCounters = () => {
+      counters.forEach((counter) => {
+        const target = Number(counter.dataset.statValue);
+        const finalText = counter.dataset.statDisplay || String(target);
+        const value = { current: 0 };
+
+        tweens.push(gsap.to(value, {
+          current: target,
+          duration: 3,
+          ease: 'power1.out',
+          onUpdate: () => {
+            const current = Math.round(value.current);
+            counter.textContent = finalText.includes(',')
+              ? current.toLocaleString('en-IN')
+              : finalText.startsWith('0') && finalText.length === 2
+                ? String(current).padStart(2, '0')
+                : String(current);
+          },
+          onComplete: () => {
+            counter.textContent = finalText;
+          },
+        }));
+      });
+    };
+
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      counters.forEach((counter) => {
+        counter.textContent = counter.dataset.statDisplay || counter.dataset.statValue || '';
+      });
+      return;
+    }
+
+    if (!('IntersectionObserver' in window)) {
+      animateCounters();
+      return () => tweens.forEach((tween) => tween.kill());
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        observer.disconnect();
+        animateCounters();
+      },
+      { threshold: 0.25 }
+    );
+    observer.observe(stats);
+
+    return () => {
+      observer.disconnect();
+      tweens.forEach((tween) => tween.kill());
+    };
   }, []);
 
   const handleNav = (page: PageId) => {
@@ -177,10 +237,13 @@ export const HomePage: React.FC<HomePageProps> = ({
               </div>
 
               {/* 2x2 on Tablet/Mobile, 4-col on Desktop Business Facts */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 pt-4 border-t border-[#34362E]">
+              <div
+                ref={aboutStatsRef}
+                className="grid grid-cols-2 sm:grid-cols-4 gap-6 pt-4 border-t border-[#34362E]"
+              >
                 <div>
                   <p className="font-display text-4xl font-bold text-[#E6F044] tabular-nums">
-                    04
+                    <span data-stat-value="4" data-stat-display="04">04</span>
                   </p>
                   <p className="text-xs text-[#A5A69B] mt-1">
                     Urban Clubs in India
@@ -188,7 +251,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                 </div>
                 <div>
                   <p className="font-display text-4xl font-bold text-[#F3F2E9] tabular-nums">
-                    57,700
+                    <span data-stat-value="57700" data-stat-display="57,700">57,700</span>
                   </p>
                   <p className="text-xs text-[#A5A69B] mt-1">
                     Sq. Ft. Training Space
@@ -196,7 +259,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                 </div>
                 <div>
                   <p className="font-display text-4xl font-bold text-[#F3F2E9] tabular-nums">
-                    32
+                    <span data-stat-value="32" data-stat-display="32">32</span>
                   </p>
                   <p className="text-xs text-[#A5A69B] mt-1">
                     Competition Power Racks
@@ -204,7 +267,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                 </div>
                 <div>
                   <p className="font-display text-4xl font-bold text-[#F3F2E9] tabular-nums">
-                    2019
+                    <span data-stat-value="2019" data-stat-display="2019">2019</span>
                   </p>
                   <p className="text-xs text-[#A5A69B] mt-1">
                     Est. Indiranagar, BLR
@@ -394,14 +457,14 @@ export const HomePage: React.FC<HomePageProps> = ({
             {COACHES.map((coach) => (
               <article
                 key={coach.id}
-                className="bg-[#242620] border border-[#34362E] rounded-xl overflow-hidden flex flex-col"
+                className="group bg-[#242620] border border-[#34362E] rounded-xl overflow-hidden flex flex-col transition-[transform,border-color,box-shadow] duration-300 ease-out hover:-translate-y-1 hover:border-[#E6F044] hover:shadow-lg motion-reduce:transition-none"
               >
                 <div className="relative aspect-[3/4] w-full overflow-hidden bg-[#111210]">
                   <ResilientImage
                     src={coach.image}
                     alt={coach.name}
                     style={{ objectPosition: coach.objectPosition || 'center' }}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 motion-reduce:transition-none"
                   />
                 </div>
                 <div className="p-5 space-y-1">
@@ -569,14 +632,14 @@ export const HomePage: React.FC<HomePageProps> = ({
             items={BRANCHES.map((branch) => (
               <article
                 key={branch.id}
-                className="h-full bg-[#242620] border border-[#34362E] rounded-xl overflow-hidden flex flex-col justify-between"
+                className="group h-full bg-[#242620] border border-[#34362E] rounded-xl overflow-hidden flex flex-col justify-between transition-[transform,border-color,box-shadow] duration-300 ease-out hover:-translate-y-1 hover:border-[#E6F044] hover:shadow-lg motion-reduce:transition-none"
               >
                 <div>
                   <div className="relative aspect-[16/9] bg-[#111210] overflow-hidden">
                     <ResilientImage
                       src={branch.image}
                       alt={branch.name}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 motion-reduce:transition-none"
                     />
                     <span className="absolute top-3 left-3 px-2.5 py-1 rounded bg-[#111210]/85 border border-[#34362E] text-xs font-medium text-[#E6F044] tabular-nums">
                       {branch.floorArea}
