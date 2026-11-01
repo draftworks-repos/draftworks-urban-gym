@@ -11,6 +11,7 @@ import { ProgramsPage } from './pages/ProgramsPage';
 import { GalleryPage } from './pages/GalleryPage';
 import { PricingPage } from './pages/PricingPage';
 import { ContactPage } from './pages/ContactPage';
+import { InitialLoader } from './components/InitialLoader';
 
 const VALID_PAGES: PageId[] = [
   'home',
@@ -32,6 +33,7 @@ function getInitialPage(): PageId {
 }
 
 export default function App() {
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState<PageId>(getInitialPage);
   const [enquiryOpen, setEnquiryOpen] = useState(false);
   const [defaultProgram, setDefaultProgram] = useState<string | undefined>(undefined);
@@ -152,6 +154,10 @@ export default function App() {
         onClose={() => setLightboxIndex(null)}
         onChangeIndex={(nextIdx) => setLightboxIndex(nextIdx)}
       />
+
+      {isInitialLoading && (
+        <InitialLoader onComplete={() => setIsInitialLoading(false)} />
+      )}
     </div>
   );
 }
