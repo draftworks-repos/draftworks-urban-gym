@@ -1,0 +1,6 @@
+{
+  "name": "DraftWorks — Urban Strength & Conditioning Club",
+  "description": "Industrial strength, conditioning, and athletic performance clubs across Bengaluru, Mumbai, New Delhi, and Hyderabad.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

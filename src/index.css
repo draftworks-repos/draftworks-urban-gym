@@ -1,0 +1,60 @@
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+
+@layer base {
+  :root {
+    --bg-main: #111210;
+    --bg-secondary: #1B1D19;
+    --bg-card: #242620;
+    --accent-yellow: #E6F044;
+    --accent-yellow-secondary: #C8D52C;
+    --text-primary: #F3F2E9;
+    --text-secondary: #A5A69B;
+    --border-graphite: #34362E;
+    --font-display: 'Barlow Condensed', sans-serif;
+    --font-body: 'DM Sans', sans-serif;
+  }
+
+  html {
+    background-color: #111210;
+    color: #F3F2E9;
+    font-family: var(--font-body);
+    overflow-x: hidden;
+  }
+
+  body {
+    background-color: #111210;
+    color: #F3F2E9;
+    font-family: var(--font-body);
+    overflow-x: hidden;
+    margin: 0;
+  }
+
+  h1, h2, h3, h4, .font-display {
+    font-family: var(--font-display);
+    text-wrap: balance;
+  }
+}
+
+.font-display {
+  font-family: 'Barlow Condensed', sans-serif;
+}
+
+.font-body {
+  font-family: 'DM Sans', sans-serif;
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
